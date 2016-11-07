@@ -10,9 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.suleiman.pagination.api.MovieApi;
+import com.suleiman.pagination.api.MovieService;
 import com.suleiman.pagination.utils.PaginationScrollListener;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,10 +24,10 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView rv;
     ProgressBar progressBar;
 
-    private static final int PAGE_START = 0;
+    private static final int PAGE_START = 1;
     private boolean isLoading = false;
     private boolean isLastPage = false;
-    private int TOTAL_PAGES = 3;
+    private int TOTAL_PAGES = 5;
     private int currentPage = PAGE_START;
 
     @Override
@@ -92,9 +92,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadFirstPage() {
         Log.d(TAG, "loadFirstPage: ");
-        List<Movie> movies = Movie.createMovies(adapter.getItemCount());
+
+        MovieService movieService = MovieApi.getClient(this).create(MovieService.class);
+        movieService.getTopRatedMovies(
+                getString(R.string.my_api_key),
+                "en_US",
+                currentPage
+        );
+
         progressBar.setVisibility(View.GONE);
-        adapter.addAll(movies);
+//        adapter.addAll(movies);
 
         if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
         else isLastPage = true;
@@ -103,12 +110,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadNextPage() {
         Log.d(TAG, "loadNextPage: " + currentPage);
-        List<Movie> movies = Movie.createMovies(adapter.getItemCount());
+//        List<TopRatedMovies> topRatedMoviesList = Movie.createMovies(adapter.getItemCount());
 
         adapter.removeLoadingFooter();
         isLoading = false;
 
-        adapter.addAll(movies);
+//        adapter.addAll(movies);
 
         if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
         else isLastPage = true;

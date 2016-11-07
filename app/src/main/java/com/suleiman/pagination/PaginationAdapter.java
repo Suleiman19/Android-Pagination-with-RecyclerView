@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.suleiman.pagination.models.TopRatedMovies;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,22 +22,22 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int ITEM = 0;
     private static final int LOADING = 1;
 
-    private List<Movie> movies;
+    private List<TopRatedMovies> topRatedMoviesList;
     private Context context;
 
     private boolean isLoadingAdded = false;
 
     public PaginationAdapter(Context context) {
         this.context = context;
-        movies = new ArrayList<>();
+        topRatedMoviesList = new ArrayList<>();
     }
 
-    public List<Movie> getMovies() {
-        return movies;
+    public List<TopRatedMovies> getMovies() {
+        return topRatedMoviesList;
     }
 
-    public void setMovies(List<Movie> movies) {
-        this.movies = movies;
+    public void setMovies(List<TopRatedMovies> topRatedMoviesList) {
+        this.topRatedMoviesList = topRatedMoviesList;
     }
 
     @Override
@@ -66,13 +68,13 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-        Movie movie = movies.get(position);
+        TopRatedMovies topRatedMovies = topRatedMoviesList.get(position);
 
         switch (getItemViewType(position)) {
             case ITEM:
                 MovieVH movieVH = (MovieVH) holder;
 
-                movieVH.textView.setText(movie.getTitle());
+//                movieVH.textView.setText(topRatedMoviesList.getTitle());
                 break;
             case LOADING:
 //                Do nothing
@@ -83,12 +85,12 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemCount() {
-        return movies == null ? 0 : movies.size();
+        return topRatedMoviesList == null ? 0 : topRatedMoviesList.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        return (position == movies.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
+        return (position == topRatedMoviesList.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
     }
 
     /*
@@ -96,21 +98,21 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
    _________________________________________________________________________________________________
     */
 
-    public void add(Movie mc) {
-        movies.add(mc);
-        notifyItemInserted(movies.size() - 1);
+    public void add(TopRatedMovies mc) {
+        topRatedMoviesList.add(mc);
+        notifyItemInserted(topRatedMoviesList.size() - 1);
     }
 
-    public void addAll(List<Movie> mcList) {
-        for (Movie mc : mcList) {
-            add(mc);
+    public void addAll(List<TopRatedMovies> topRatedMoviesList) {
+        for (TopRatedMovies topRatedMovies : topRatedMoviesList) {
+            add(topRatedMovies);
         }
     }
 
-    public void remove(Movie city) {
-        int position = movies.indexOf(city);
+    public void remove(TopRatedMovies topRatedMovies) {
+        int position = topRatedMoviesList.indexOf(topRatedMovies);
         if (position > -1) {
-            movies.remove(position);
+            topRatedMoviesList.remove(position);
             notifyItemRemoved(position);
         }
     }
@@ -129,23 +131,23 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void addLoadingFooter() {
         isLoadingAdded = true;
-        add(new Movie());
+        add(new TopRatedMovies());
     }
 
     public void removeLoadingFooter() {
         isLoadingAdded = false;
 
-        int position = movies.size() - 1;
-        Movie item = getItem(position);
+        int position = topRatedMoviesList.size() - 1;
+        TopRatedMovies topRatedMovies = getItem(position);
 
-        if (item != null) {
-            movies.remove(position);
+        if (topRatedMovies != null) {
+            topRatedMoviesList.remove(position);
             notifyItemRemoved(position);
         }
     }
 
-    public Movie getItem(int position) {
-        return movies.get(position);
+    public TopRatedMovies getItem(int position) {
+        return topRatedMoviesList.get(position);
     }
 
 
