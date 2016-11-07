@@ -32,4 +32,8 @@
       </state>
     </states>
   </component>
+<<<<<<< HEAD
+=======
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK" />
+>>>>>>> 805e6984f77b6c0b51c0e3765e589045955290b8
 </project>

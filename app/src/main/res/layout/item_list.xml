@@ -1,15 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          android:id="@+id/item_text"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginBottom="@dimen/activity_margin_half"
-          android:layout_marginEnd="@dimen/activity_horizontal_margin"
-          android:layout_marginLeft="@dimen/activity_horizontal_margin"
-          android:layout_marginRight="@dimen/activity_horizontal_margin"
-          android:layout_marginStart="@dimen/activity_horizontal_margin"
-          android:layout_marginTop="@dimen/activity_margin_half"
-          android:background="@android:color/white"
-          android:padding="@dimen/activity_horizontal_margin"
-          tools:text="Title 12"/>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:padding="@dimen/activity_horizontal_margin"
+             tools:background="@android:color/white"
+             tools:text="Title 12">
+
+    <ImageView
+        android:id="@+id/movie_poster"
+        android:layout_width="@dimen/poster_thumb_width"
+        android:layout_height="@dimen/poster_thumb_height"
+        tools:background="@color/colorAccent"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/poster_thumb_width"
+        android:layout_marginStart="@dimen/poster_thumb_width"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/movie_year"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="0.38"
+            android:gravity="end"
+            android:textStyle="bold"
+            tools:text="2009"/>
+
+        <TextView
+            android:id="@+id/movie_title"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            tools:text="Movie Title"/>
+
+        <TextView
+            android:id="@+id/movie_desc"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_margin_half"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            tools:text="Nowadays, user engagement is considered one of the most important metrics for the success of your app"/>
+
+    </LinearLayout>
+
+</FrameLayout>
