@@ -1,42 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="wrap_content"
-             android:padding="@dimen/activity_horizontal_margin"
-             tools:background="@android:color/white"
-             tools:text="Title 12">
+             android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/movie_poster"
-        android:layout_width="@dimen/poster_thumb_width"
-        android:layout_height="@dimen/poster_thumb_height"
-        tools:background="@color/colorAccent"/>
+    <android.support.v7.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_margin_half"
+        app:cardBackgroundColor="@color/placeholder_grey"
+        app:cardCornerRadius="3dp"
+        app:cardPreventCornerOverlap="false">
+
+        <ProgressBar
+            android:id="@+id/movie_progress"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="@dimen/activity_margin"
+            android:layout_height="@dimen/activity_margin"
+            android:layout_gravity="center"
+            android:theme="@style/CircularProgress"/>
+
+        <ImageView
+            android:id="@+id/movie_poster"
+            android:layout_width="@dimen/poster_thumb_width"
+            android:layout_height="@dimen/poster_thumb_height"/>
+
+    </android.support.v7.widget.CardView>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/poster_thumb_width"
-        android:layout_marginStart="@dimen/poster_thumb_width"
-        android:orientation="vertical">
+        android:layout_gravity="bottom"
+        android:layout_marginTop="@dimen/activity_margin"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_margin"
+        android:paddingEnd="@dimen/activity_margin"
+        android:paddingLeft="@dimen/poster_thumb_width"
+        android:paddingRight="@dimen/activity_margin"
+        android:paddingStart="@dimen/poster_thumb_width"
+        android:paddingTop="@dimen/activity_margin_half">
 
         <TextView
             android:id="@+id/movie_year"
             style="@style/TextAppearance.AppCompat.Caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_margin_content"
+            android:layout_marginStart="@dimen/activity_margin_content"
             android:alpha="0.38"
             android:gravity="end"
+            android:maxLines="1"
             android:textStyle="bold"
-            tools:text="2009"/>
+            tools:text="2009 | EN"/>
 
         <TextView
             android:id="@+id/movie_title"
             style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingStart="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_margin_content"
+            android:layout_marginStart="@dimen/activity_margin_content"
+            android:layout_marginTop="@dimen/activity_margin_quarter"
+            android:maxLines="1"
             tools:text="Movie Title"/>
 
         <TextView
@@ -44,11 +72,11 @@
             style="@style/TextAppearance.AppCompat.Caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_margin_content"
+            android:layout_marginStart="@dimen/activity_margin_content"
             android:layout_marginTop="@dimen/activity_margin_half"
             android:ellipsize="end"
             android:maxLines="2"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingStart="@dimen/activity_horizontal_margin"
             tools:text="Nowadays, user engagement is considered one of the most important metrics for the success of your app"/>
 
     </LinearLayout>

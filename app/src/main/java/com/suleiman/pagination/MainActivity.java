@@ -12,8 +12,11 @@ import android.widget.ProgressBar;
 
 import com.suleiman.pagination.api.MovieApi;
 import com.suleiman.pagination.api.MovieService;
+import com.suleiman.pagination.models.Result;
 import com.suleiman.pagination.models.TopRatedMovies;
 import com.suleiman.pagination.utils.PaginationScrollListener;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,8 +35,12 @@ public class MainActivity extends AppCompatActivity {
     private static final int PAGE_START = 1;
     private boolean isLoading = false;
     private boolean isLastPage = false;
+    // limiting to 5 for this tutorial, since total pages in actual API is very large. Feel free to modify.
     private int TOTAL_PAGES = 5;
     private int currentPage = PAGE_START;
+
+    private MovieService movieService;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,14 +90,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //init service and load data
+        movieService = MovieApi.getClient().create(MovieService.class);
 
-        // mocking network delay for API call
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                loadFirstPage();
-            }
-        }, 1000);
+        loadFirstPage();
 
     }
 
@@ -98,47 +101,74 @@ public class MainActivity extends AppCompatActivity {
     private void loadFirstPage() {
         Log.d(TAG, "loadFirstPage: ");
 
-        MovieService movieService = MovieApi.getClient(this).create(MovieService.class);
-
-        movieService.getTopRatedMovies(
-                getString(R.string.my_api_key),
-                "en_US",
-                currentPage
-        ).enqueue(new Callback<TopRatedMovies>() {
+        callTopRatedMoviesApi().enqueue(new Callback<TopRatedMovies>() {
             @Override
             public void onResponse(Call<TopRatedMovies> call, Response<TopRatedMovies> response) {
                 // Got data. Send it to adapter
-                Log.d(TAG, "loadFirstPage: onResponse: " + response.raw().body().toString());
-                TopRatedMovies topRatedMovies = response.body();
-                adapter.add(topRatedMovies);
+
+                List<Result> results = fetchResults(response);
+                progressBar.setVisibility(View.GONE);
+                adapter.addAll(results);
+
+                if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
+                else isLastPage = true;
             }
 
             @Override
             public void onFailure(Call<TopRatedMovies> call, Throwable t) {
-                // API call failed. Handle failure
-                t.printStackTrace(); // for now
+                t.printStackTrace();
+                // TODO: 08/11/16 handle failure
             }
         });
 
-        progressBar.setVisibility(View.GONE);
-//        adapter.addAll(movies);
+    }
 
-        if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
-        else isLastPage = true;
-
+    /**
+     * @param response extracts List<{@link Result>} from response
+     * @return
+     */
+    private List<Result> fetchResults(Response<TopRatedMovies> response) {
+        TopRatedMovies topRatedMovies = response.body();
+        return topRatedMovies.getResults();
     }
 
     private void loadNextPage() {
         Log.d(TAG, "loadNextPage: " + currentPage);
-//        List<TopRatedMovies> topRatedMoviesList = Movie.createMovies(adapter.getItemCount());
 
-        adapter.removeLoadingFooter();
-        isLoading = false;
+        callTopRatedMoviesApi().enqueue(new Callback<TopRatedMovies>() {
+            @Override
+            public void onResponse(Call<TopRatedMovies> call, Response<TopRatedMovies> response) {
+                adapter.removeLoadingFooter();
+                isLoading = false;
 
-//        adapter.addAll(movies);
+                List<Result> results = fetchResults(response);
+                adapter.addAll(results);
 
-        if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
-        else isLastPage = true;
+                if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
+                else isLastPage = true;
+            }
+
+            @Override
+            public void onFailure(Call<TopRatedMovies> call, Throwable t) {
+                t.printStackTrace();
+                // TODO: 08/11/16 handle failure
+            }
+        });
+    }
+
+
+    /**
+     * Performs a Retrofit call to the top rated movies API.
+     * Same API call for Pagination.
+     * As {@link #currentPage} will be incremented automatically
+     * by @{@link PaginationScrollListener} to load next page.
+     */
+    private Call<TopRatedMovies> callTopRatedMoviesApi() {
+        return movieService.getTopRatedMovies(
+                getString(R.string.my_api_key),
+                "en_US",
+                currentPage
+        );
     }
 
 
