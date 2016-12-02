@@ -19,7 +19,7 @@ public interface MovieService {
     Call<TopRatedMovies> getTopRatedMovies(
             @Query("api_key") String apiKey,
             @Query("language") String language,
-                @Query("page") int pageIndex
+            @Query("page") int pageIndex
     );
 
 }

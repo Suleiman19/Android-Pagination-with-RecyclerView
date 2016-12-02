@@ -6,6 +6,4 @@
         android:width="2dp"
         android:color="@color/placeholder_grey"/>
 
-    <solid android:color="@color/placeholder_grey_20"></solid>
-
 </shape>

@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Pagination</string>
     <string name="my_api_key">ec01f8c2eb6ac402f2ca026dc2d9b8fd</string>
+    <string name="error_msg">Sorry! Couldn\'t fetch movies.</string>
+    <string name="btn_retry">Retry</string>
+    <string name="error_msg_no_internet">Not connected to internet</string>
+    <string name="error_msg_timeout">The server took too long to respond</string>
+    <string name="error_msg_unknown">An unexpected error occurred</string>
 </resources>

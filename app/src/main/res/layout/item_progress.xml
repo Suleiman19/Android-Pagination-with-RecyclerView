@@ -11,10 +11,11 @@
         android:layout_gravity="center"/>
 
     <ImageButton
+        android:id="@+id/loadmore_retry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/shape_retry_round"
+        android:background="@drawable/rety_selector"
         android:padding="@dimen/activity_margin_half"
         android:src="@drawable/ic_refresh_black_24dp"
         android:tint="@color/placeholder_grey"
