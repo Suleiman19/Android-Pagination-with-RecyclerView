@@ -2,12 +2,14 @@ package com.suleiman.pagination;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -39,6 +41,8 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private boolean retryPageLoad = false;
 
     private PaginationAdapterCallback mCallback;
+
+    private String errorMsg;
 
     public PaginationAdapter(Context context) {
         this.context = context;
@@ -132,10 +136,16 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 LoadingVH loadingVH = (LoadingVH) holder;
 
                 if (retryPageLoad) {
-                    loadingVH.mRetryBtn.setVisibility(View.VISIBLE);
+                    loadingVH.mErrorLayout.setVisibility(View.VISIBLE);
                     loadingVH.mProgressBar.setVisibility(View.GONE);
+
+                    loadingVH.mErrorTxt.setText(
+                            errorMsg != null ?
+                                    errorMsg :
+                                    context.getString(R.string.error_msg_unknown));
+
                 } else {
-                    loadingVH.mRetryBtn.setVisibility(View.GONE);
+                    loadingVH.mErrorLayout.setVisibility(View.GONE);
                     loadingVH.mProgressBar.setVisibility(View.VISIBLE);
                 }
 
@@ -212,17 +222,17 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return movieResults.get(position);
     }
 
-    public void showRetry(boolean show) {
-//        if (show) {
-//            retryPageLoad = true;
-//            notifyItemChanged(movieResults.size() - 1);
-//        } else {
-//            retryPageLoad = false;
-//            notifyItemChanged(movieResults.size() - 1);
-//        }
-
+    /**
+     * Displays Pagination retry footer view along with appropriate errorMsg
+     *
+     * @param show
+     * @param errorMsg to display if page load fails
+     */
+    public void showRetry(boolean show, @Nullable String errorMsg) {
         retryPageLoad = show;
         notifyItemChanged(movieResults.size() - 1);
+
+        if (errorMsg != null) this.errorMsg = errorMsg;
     }
 
 
@@ -253,24 +263,35 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
 
-    protected class LoadingVH extends RecyclerView.ViewHolder {
+    protected class LoadingVH extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ProgressBar mProgressBar;
         private ImageButton mRetryBtn;
+        private TextView mErrorTxt;
+        private LinearLayout mErrorLayout;
 
         public LoadingVH(View itemView) {
             super(itemView);
 
             mProgressBar = (ProgressBar) itemView.findViewById(R.id.loadmore_progress);
             mRetryBtn = (ImageButton) itemView.findViewById(R.id.loadmore_retry);
+            mErrorTxt = (TextView) itemView.findViewById(R.id.loadmore_errortxt);
+            mErrorLayout = (LinearLayout) itemView.findViewById(R.id.loadmore_errorlayout);
 
-            mRetryBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showRetry(false);
+            mRetryBtn.setOnClickListener(this);
+            mErrorLayout.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.loadmore_retry:
+                case R.id.loadmore_errorlayout:
+
+                    showRetry(false, null);
                     mCallback.retryPageLoad();
-                }
-            });
 
+                    break;
+            }
         }
     }
 

@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
-             android:layout_height="?attr/actionBarSize">
+             android:layout_height="wrap_content"
+             tools:background="#fafafa">
 
     <ProgressBar
         android:id="@+id/loadmore_progress"
@@ -10,18 +11,57 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
 
-    <ImageButton
-        android:id="@+id/loadmore_retry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@drawable/rety_selector"
-        android:padding="@dimen/activity_margin_half"
-        android:src="@drawable/ic_refresh_black_24dp"
-        android:tint="@color/placeholder_grey"
-        android:tintMode="src_in"
+    <LinearLayout
+        android:id="@+id/loadmore_errorlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/activity_margin"
+        android:paddingTop="@dimen/activity_margin"
         android:visibility="gone"
-        tools:targetApi="lollipop"
-        tools:visibility="visible"/>
+        tools:visibility="visible">
+
+        <ImageButton
+            android:id="@+id/loadmore_retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/activity_margin_content"
+            android:layout_marginStart="@dimen/activity_margin_content"
+            android:background="@drawable/rety_selector"
+            android:padding="@dimen/activity_margin_half"
+            android:src="@drawable/ic_refresh_black_24dp"
+            android:tint="@color/placeholder_grey"
+            android:tintMode="src_in"
+            tools:targetApi="lollipop"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/activity_margin_content"
+            android:layout_marginLeft="@dimen/activity_margin"
+            android:layout_marginRight="@dimen/activity_margin_content"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/loadmore_errortxt"
+                style="@style/Base.TextAppearance.AppCompat.Body1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="What went wrong"/>
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tap_to_reload"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </FrameLayout>

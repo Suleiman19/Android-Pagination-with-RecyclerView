@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
             @Override
             public void onFailure(Call<TopRatedMovies> call, Throwable t) {
                 t.printStackTrace();
-                adapter.showRetry(true);
+                adapter.showRetry(true, fetchErrorMessage(t));
             }
         });
     }
@@ -195,30 +195,38 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         loadNextPage();
     }
 
-    // Helpers -------------------------------------------------------------------------------------
 
     /**
-     * @param throwable to determine and display appropriate error saying why call failed
+     * @param throwable required for {@link #fetchErrorMessage(Throwable)}
+     * @return
      */
     private void showErrorView(Throwable throwable) {
+
         if (errorLayout.getVisibility() == View.GONE) {
             errorLayout.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
 
-            // display appropriate error message
-            // Handling 3 generic fail cases.
-
-            if (!isNetworkConnected()) {
-                txtError.setText(R.string.error_msg_no_internet);
-            } else {
-                if (throwable instanceof TimeoutException) {
-                    txtError.setText(R.string.error_msg_timeout);
-                } else {
-                    txtError.setText(R.string.error_msg_unknown);
-                }
-            }
+            txtError.setText(fetchErrorMessage(throwable));
         }
     }
+
+    /**
+     * @param throwable to identify the type of error
+     * @return appropriate error message
+     */
+    private String fetchErrorMessage(Throwable throwable) {
+        String errorMsg = getResources().getString(R.string.error_msg_unknown);
+
+        if (!isNetworkConnected()) {
+            errorMsg = getResources().getString(R.string.error_msg_no_internet);
+        } else if (throwable instanceof TimeoutException) {
+            errorMsg = getResources().getString(R.string.error_msg_timeout);
+        }
+
+        return errorMsg;
+    }
+
+    // Helpers -------------------------------------------------------------------------------------
 
 
     private void hideErrorView() {
