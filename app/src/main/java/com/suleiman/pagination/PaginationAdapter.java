@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -30,8 +31,11 @@ import java.util.List;
 
 public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    // View Types
     private static final int ITEM = 0;
     private static final int LOADING = 1;
+    private static final int HERO = 2;
+
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/w150";
 
     private List<Result> movieResults;
@@ -65,51 +69,47 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         switch (viewType) {
             case ITEM:
-                viewHolder = getViewHolder(parent, inflater);
+                View viewItem = inflater.inflate(R.layout.item_list, parent, false);
+                viewHolder = new MovieVH(viewItem);
                 break;
             case LOADING:
-                View v2 = inflater.inflate(R.layout.item_progress, parent, false);
-                viewHolder = new LoadingVH(v2);
+                View viewLoading = inflater.inflate(R.layout.item_progress, parent, false);
+                viewHolder = new LoadingVH(viewLoading);
+                break;
+            case HERO:
+                View viewHero = inflater.inflate(R.layout.item_hero, parent, false);
+                viewHolder = new HeroVH(viewHero);
                 break;
         }
         return viewHolder;
     }
 
-    @NonNull
-    private RecyclerView.ViewHolder getViewHolder(ViewGroup parent, LayoutInflater inflater) {
-        RecyclerView.ViewHolder viewHolder;
-        View v1 = inflater.inflate(R.layout.item_list, parent, false);
-        viewHolder = new MovieVH(v1);
-        return viewHolder;
-    }
-
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
         Result result = movieResults.get(position); // Movie
 
         switch (getItemViewType(position)) {
+
+            case HERO:
+                final HeroVH heroVh = (HeroVH) holder;
+
+                heroVh.mMovieTitle.setText(result.getTitle());
+                heroVh.mYear.setText(formatYearLabel(result));
+                heroVh.mMovieDesc.setText(result.getOverview());
+
+                loadImage(result.getBackdropPath())
+                        .into(heroVh.mPosterImg);
+                break;
+
             case ITEM:
                 final MovieVH movieVH = (MovieVH) holder;
 
                 movieVH.mMovieTitle.setText(result.getTitle());
-
-
-                movieVH.mYear.setText(
-                        result.getReleaseDate().substring(0, 4)  // we want the year only
-                                + " | "
-                                + result.getOriginalLanguage().toUpperCase()
-                );
+                movieVH.mYear.setText(formatYearLabel(result));
                 movieVH.mMovieDesc.setText(result.getOverview());
 
-                /**
-                 * Using Glide to handle image loading.
-                 * Learn more about Glide here:
-                 * <a href="http://blog.grafixartist.com/image-gallery-app-android-studio-1-4-glide/" />
-                 */
-                Glide
-                        .with(context)
-                        .load(BASE_URL_IMG + result.getPosterPath())
+                // load movie thumbnail
+                loadImage(result.getPosterPath())
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -125,11 +125,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                 return false;   // return false if you want Glide to handle everything else.
                             }
                         })
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)   // cache both original & resized image
-                        .centerCrop()
-                        .crossFade()
                         .into(movieVH.mPosterImg);
-
                 break;
 
             case LOADING:
@@ -148,10 +144,8 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     loadingVH.mErrorLayout.setVisibility(View.GONE);
                     loadingVH.mProgressBar.setVisibility(View.VISIBLE);
                 }
-
                 break;
         }
-
     }
 
     @Override
@@ -161,12 +155,48 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemViewType(int position) {
-        return (position == movieResults.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
+        if (position == 0) {
+            return HERO;
+        } else {
+            return (position == movieResults.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
+        }
+    }
+
+    /*
+        Helpers - bind Views
+   _________________________________________________________________________________________________
+    */
+
+    /**
+     * @param result
+     * @return [releasedate] | [2letterlangcode]
+     */
+    private String formatYearLabel(Result result) {
+        return result.getReleaseDate().substring(0, 4)  // we want the year only
+                + " | "
+                + result.getOriginalLanguage().toUpperCase();
+    }
+
+    /**
+     * Using Glide to handle image loading.
+     * Learn more about Glide here:
+     * <a href="http://blog.grafixartist.com/image-gallery-app-android-studio-1-4-glide/" />
+     *
+     * @param posterPath from {@link Result#getPosterPath()}
+     * @return Glide builder
+     */
+    private DrawableRequestBuilder<String> loadImage(@NonNull String posterPath) {
+        return Glide
+                .with(context)
+                .load(BASE_URL_IMG + posterPath)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)   // cache both original & resized image
+                .centerCrop()
+                .crossFade();
     }
 
 
     /*
-   Helpers
+        Helpers - Pagination
    _________________________________________________________________________________________________
     */
 
@@ -240,6 +270,25 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
    View Holders
    _________________________________________________________________________________________________
     */
+
+    /**
+     * Header ViewHolder
+     */
+    protected class HeroVH extends RecyclerView.ViewHolder {
+        private TextView mMovieTitle;
+        private TextView mMovieDesc;
+        private TextView mYear; // displays "year | language"
+        private ImageView mPosterImg;
+
+        public HeroVH(View itemView) {
+            super(itemView);
+
+            mMovieTitle = (TextView) itemView.findViewById(R.id.movie_title);
+            mMovieDesc = (TextView) itemView.findViewById(R.id.movie_desc);
+            mYear = (TextView) itemView.findViewById(R.id.movie_year);
+            mPosterImg = (ImageView) itemView.findViewById(R.id.movie_poster);
+        }
+    }
 
     /**
      * Main list's content ViewHolder

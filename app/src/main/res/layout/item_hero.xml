@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/poster_hero_height"
+    android:layout_marginBottom="@dimen/activity_margin_content"
+    android:layout_marginEnd="@dimen/activity_margin_half"
+    android:layout_marginLeft="@dimen/activity_margin_half"
+    android:layout_marginRight="@dimen/activity_margin_half"
+    android:layout_marginStart="@dimen/activity_margin_half"
+    app:cardBackgroundColor="@color/placeholder_grey"
+    app:cardCornerRadius="3dp"
+    app:cardPreventCornerOverlap="false">
+
+    <ImageView
+        android:id="@+id/movie_poster"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:background="@color/colorAccent"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.7"
+        android:background="@drawable/scrim"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:padding="@dimen/activity_margin">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/movie_title"
+                style="@style/TextAppearance.AppCompat.Subhead.Inverse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLength="40"
+                android:maxLines="1"
+                tools:text="Doctor Who : The Day of the Doctor"/>
+
+            <TextView
+                android:id="@+id/movie_year"
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:alpha="0.4"
+                android:gravity="end"
+                android:maxLines="1"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                tools:text="2009 | EN"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/movie_desc"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_margin_half"
+            android:alpha="0.7"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@android:color/white"
+            tools:text="Nowadays, user engagement is considered one of the most important metrics for the success of your app"/>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
