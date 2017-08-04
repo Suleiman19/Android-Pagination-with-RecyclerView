@@ -31,8 +31,7 @@ public abstract class PaginationScrollListener extends RecyclerView.OnScrollList
 
         if (!isLoading() && !isLastPage()) {
             if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                    && firstVisibleItemPosition >= 0
-                    && totalItemCount >= getTotalPageCount()) {
+                    && firstVisibleItemPosition >= 0) {
                 loadMoreItems();
             }
         }
