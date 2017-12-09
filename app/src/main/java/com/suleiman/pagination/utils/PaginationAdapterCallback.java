@@ -8,4 +8,6 @@ public interface PaginationAdapterCallback {
     void retryPageLoad();
 
     void onItemsClickListener(Result result, int position);
+
+    void emptyLayout();
 }

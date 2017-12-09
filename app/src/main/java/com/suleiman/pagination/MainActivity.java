@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         swipeRefreshLayout.setColorScheme(android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
+
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -271,7 +273,13 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
     @Override
     public void onItemsClickListener(Result result, int position) {
+        adapter.removeAtItemsPosition(position);
         Toast.makeText(this, "You click " + position + " items " + result.getTitle(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void emptyLayout() {
+        Toast.makeText(this, "empty items", Toast.LENGTH_SHORT).show();
     }
 
 

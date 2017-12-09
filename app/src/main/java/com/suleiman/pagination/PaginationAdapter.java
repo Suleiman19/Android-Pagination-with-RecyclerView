@@ -151,7 +151,13 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemCount() {
-        return movieResults == null ? 0 : movieResults.size();
+        if (movieResults == null) {
+            mCallback.emptyLayout();
+            return 0;
+        } else {
+            return movieResults.size();
+        }
+//        return movieResults == null ? 0 : movieResults.size()
     }
 
     @Override
@@ -236,6 +242,12 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         while (getItemCount() > 0) {
             remove(getItem(0));
         }
+    }
+
+    public void removeAtItemsPosition(int position) {
+        movieResults.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, movieResults.size());
     }
 
     public boolean isEmpty() {
