@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:id="@+id/swipe_layout"
+    android:layout_width="match_parent"
+    >
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -23,3 +28,4 @@
     <include layout="@layout/error_layout"/>
 
 </FrameLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

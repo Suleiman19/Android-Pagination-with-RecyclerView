@@ -104,7 +104,9 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case ITEM:
                 final MovieVH movieVH = (MovieVH) holder;
                 movieVH.mMovieTitle.setText(result.getTitle());
-                movieVH.mYear.setText(formatYearLabel(result));
+                if (result.getTitle() != null) {
+                    movieVH.mYear.setText(formatYearLabel(result));
+                }
                 movieVH.mMovieDesc.setText(result.getOverview());
 
                 // load movie thumbnail
@@ -297,6 +299,13 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             mMovieDesc = (TextView) itemView.findViewById(R.id.movie_desc);
             mYear = (TextView) itemView.findViewById(R.id.movie_year);
             mPosterImg = (ImageView) itemView.findViewById(R.id.movie_poster);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCallback.onItemsClickListener(movieResults.get(getAdapterPosition()), getAdapterPosition());
+                }
+            });
         }
     }
 
@@ -318,6 +327,12 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             mYear = (TextView) itemView.findViewById(R.id.movie_year);
             mPosterImg = (ImageView) itemView.findViewById(R.id.movie_poster);
             mProgress = (ProgressBar) itemView.findViewById(R.id.movie_progress);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCallback.onItemsClickListener(movieResults.get(getAdapterPosition()), getAdapterPosition());
+                }
+            });
         }
     }
 
