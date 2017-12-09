@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
     private static final String TAG = "MainActivity";
 
-    PaginationAdapter adapter;
+    com.kotlinUtils.PaginationAdapter adapter;
     LinearLayoutManager linearLayoutManager;
     GridLayoutManager gridLayoutManager;
 
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
             }
         });
 
-        adapter = new PaginationAdapter(this);
+        adapter = new com.kotlinUtils.PaginationAdapter(this);
 
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         rv.setAdapter(adapter);
 
 
-        rv.addOnScrollListener(new PaginationScrollListener(gridLayoutManager) {
+        rv.addOnScrollListener(new com.kotlinUtils.PaginationScrollListener(gridLayoutManager) {
             @Override
             protected void loadMoreItems() {
                 isLoading = true;
