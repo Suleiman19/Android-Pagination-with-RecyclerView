@@ -3,11 +3,6 @@ package com.suleiman.pagination.utils;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-/**
- * Pagination
- * Created by Suleiman19 on 10/15/16.
- * Copyright (c) 2016. Suleiman Ali Shakir. All rights reserved.
- */
 public abstract class PaginationScrollListener extends RecyclerView.OnScrollListener {
 
     LinearLayoutManager layoutManager;

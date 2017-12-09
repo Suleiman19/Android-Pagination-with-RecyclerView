@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
     PaginationAdapter adapter;
     LinearLayoutManager linearLayoutManager;
+    GridLayoutManager gridLayoutManager;
 
     RecyclerView rv;
     ProgressBar progressBar;
@@ -66,18 +68,35 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         adapter = new PaginationAdapter(this);
 
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        rv.setLayoutManager(linearLayoutManager);
-        rv.setItemAnimator(new DefaultItemAnimator());
 
+        gridLayoutManager = new GridLayoutManager(this, 2
+        );
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                switch (adapter.getItemViewType(position)) {
+                    case PaginationAdapter.HERO:
+                        return 2; // spacing 2 row in 1 items
+                    case PaginationAdapter.ITEM:
+                        return 1; // spacing 1 row in 1 items
+                    case PaginationAdapter.LOADING:
+                        return 2;// spacing 2 row in 1 items
+                    default:
+                        return -1;
+                }
+            }
+        });
+        rv.setLayoutManager(gridLayoutManager);
+        rv.setItemAnimator(new DefaultItemAnimator());
         rv.setAdapter(adapter);
 
-        rv.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
+
+        rv.addOnScrollListener(new PaginationScrollListener(gridLayoutManager) {
             @Override
             protected void loadMoreItems() {
                 isLoading = true;
                 currentPage += 1;
-
-                loadNextPage();
+                loadApi("next");
             }
 
             @Override
@@ -99,12 +118,12 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         //init service and load data
         movieService = MovieApi.getClient().create(MovieService.class);
 
-        loadFirstPage();
+        loadApi("first");
 
         btnRetry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loadFirstPage();
+                loadApi("first");
             }
         });
 
@@ -149,7 +168,10 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         return topRatedMovies.getResults();
     }
 
-    private void loadNextPage() {
+    private void loadNextPage(String type) {
+        if (type.equals("first")) {
+            hideErrorView();
+        }
         Log.d(TAG, "loadNextPage: " + currentPage);
 
         callTopRatedMoviesApi().enqueue(new Callback<TopRatedMovies>() {
@@ -160,6 +182,37 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
                 List<Result> results = fetchResults(response);
                 adapter.addAll(results);
+
+                if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
+                else isLastPage = true;
+            }
+
+            @Override
+            public void onFailure(Call<TopRatedMovies> call, Throwable t) {
+                t.printStackTrace();
+                adapter.showRetry(true, fetchErrorMessage(t));
+            }
+        });
+    }
+
+    /*adding type and call api method write once*/
+    private void loadApi(final String type) {
+        callTopRatedMoviesApi().enqueue(new Callback<TopRatedMovies>() {
+            @Override
+            public void onResponse(Call<TopRatedMovies> call, Response<TopRatedMovies> response) {
+                if (type.equals("first")) {
+                    Log.d(TAG, "loadFirstPage: " + currentPage);
+                    hideErrorView();
+                    List<Result> results = fetchResults(response);
+                    progressBar.setVisibility(View.GONE);
+                    adapter.addAll(results);
+                } else {
+                    Log.d(TAG, "loadNextPage: " + currentPage);
+                    adapter.removeLoadingFooter();
+                    isLoading = false;
+                    List<Result> results = fetchResults(response);
+                    adapter.addAll(results);
+                }
 
                 if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
                 else isLastPage = true;
@@ -191,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
     @Override
     public void retryPageLoad() {
-        loadNextPage();
+        loadApi("more");
     }
 
 

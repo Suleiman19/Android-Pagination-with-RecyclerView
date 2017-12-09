@@ -25,16 +25,13 @@ import com.suleiman.pagination.utils.PaginationAdapterCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Suleiman on 19/10/16.
- */
 
 public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     // View Types
-    private static final int ITEM = 0;
-    private static final int LOADING = 1;
-    private static final int HERO = 2;
+    public static final int ITEM = 0;
+    public static final int LOADING = 1;
+    public static final int HERO = 2;
 
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/w150";
 
@@ -90,20 +87,22 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         switch (getItemViewType(position)) {
 
+
             case HERO:
                 final HeroVH heroVh = (HeroVH) holder;
-
                 heroVh.mMovieTitle.setText(result.getTitle());
-                heroVh.mYear.setText(formatYearLabel(result));
+                if (result.getTitle() != null) {
+                    heroVh.mYear.setText(formatYearLabel(result));
+                } else {
+                    heroVh.mYear.setText("null");
+                }
                 heroVh.mMovieDesc.setText(result.getOverview());
 
                 loadImage(result.getBackdropPath())
                         .into(heroVh.mPosterImg);
                 break;
-
             case ITEM:
                 final MovieVH movieVH = (MovieVH) holder;
-
                 movieVH.mMovieTitle.setText(result.getTitle());
                 movieVH.mYear.setText(formatYearLabel(result));
                 movieVH.mMovieDesc.setText(result.getOverview());
@@ -155,11 +154,17 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) {
+        if (position % 3 == 0) {
             return HERO;
         } else {
             return (position == movieResults.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
+
         }
+//        if (position == 0) {
+//            return HERO;
+//        } else {
+//            return (position == movieResults.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
+//        }
     }
 
     /*
@@ -172,9 +177,14 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      * @return [releasedate] | [2letterlangcode]
      */
     private String formatYearLabel(Result result) {
-        return result.getReleaseDate().substring(0, 4)  // we want the year only
-                + " | "
-                + result.getOriginalLanguage().toUpperCase();
+        if (result != null) {
+            return result.getReleaseDate().substring(0, 4)  // we want the year only
+                    + " | "
+                    + result.getOriginalLanguage().toUpperCase();
+
+        } else {
+            return "";
+        }
     }
 
     /**
