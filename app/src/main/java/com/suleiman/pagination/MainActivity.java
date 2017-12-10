@@ -11,6 +11,9 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -347,5 +350,31 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         currentPage = PAGE_START;
         adapter.clear();
         loadApi("first");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.add, menu);
+        return true;
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_row: {
+                Result r = new Result();
+                r.setPosterPath("https://scontent.xx.fbcdn.net/v/t1.0-9/s720x720/24862150_10154896375856035_2285275458086808430_n.jpg?oh=b8a8d3c097ad859ee24a2c1818003688&oe=5A8BE160");
+                r.setBackdropPath("https://scontent.xx.fbcdn.net/v/t1.0-9/s720x720/24862150_10154896375856035_2285275458086808430_n.jpg?oh=b8a8d3c097ad859ee24a2c1818003688&oe=5A8BE160");
+                r.setTitle("add row");
+                r.setOriginalLanguage("En");
+                r.setReleaseDate("13131");
+                r.setId(242);
+                r.setGenreIds(new ArrayList<Integer>());
+                adapter.addRow(r);
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

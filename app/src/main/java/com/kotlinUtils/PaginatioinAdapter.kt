@@ -71,8 +71,6 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
         val result = movieResults!![position] // Movie
 
         when (getItemViewType(position)) {
-
-
             HERO -> {
                 val heroVh = holder as HeroVH
                 heroVh.mMovieTitle.text = result.title
@@ -82,7 +80,6 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
                     heroVh.mYear.text = "null"
                 }
                 heroVh.mMovieDesc.text = result.overview
-
                 loadImage(result.backdropPath)
                         .into(heroVh.mPosterImg)
             }
@@ -93,7 +90,6 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
                     movieVH.mYear.text = formatYearLabel(result)
                 }
                 movieVH.mMovieDesc.text = result.overview
-
                 // load movie thumbnail
                 loadImage(result.posterPath)
                         .listener(object : RequestListener<String, GlideDrawable> {
@@ -108,8 +104,7 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
                                 movieVH.mProgress.visibility = View.GONE
                                 return false   // return false if you want Glide to handle everything else.
                             }
-                        })
-                        .into(movieVH.mPosterImg)
+                        }).into(movieVH.mPosterImg)
             }
 
             LOADING -> {
@@ -176,6 +171,7 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
             ""
         }
     }
+
     /**
      * Using Glide to handle image loading.
      * Learn more about Glide here:
@@ -189,7 +185,7 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
     private fun loadImage(posterPath: String?): DrawableRequestBuilder<String> {
 
         if (posterPath != null) {
-            if (posterPath.contains("profile_image")) {
+            if (posterPath.contains("profile_image") || posterPath.contains("scontent")) {
                 imageUrl = posterPath
             } else {
                 imageUrl = BASE_URL_IMG + posterPath
@@ -237,18 +233,26 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
         }
     }
 
+    /*remove specific row*/
     fun removeAtItemsPosition(position: Int) {
         movieResults!!.removeAt(position)
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, movieResults!!.size)
     }
 
+    /*update row */
     fun updateItemsAtPosition(position: Int, result: Result) {
         movieResults!!.removeAt(position)
         notifyItemChanged(position)
         movieResults!!.add(position, result)
         notifyItemChanged(position, movieResults!!.size)
 
+    }
+
+    /*add new row*/
+    fun addRow(result: Result) {
+        movieResults!!.add(0, result)
+        notifyItemRangeChanged(0, movieResults!!.size)
     }
 
 
