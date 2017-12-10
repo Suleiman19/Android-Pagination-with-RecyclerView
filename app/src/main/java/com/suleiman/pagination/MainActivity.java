@@ -1,8 +1,10 @@
 package com.suleiman.pagination;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,6 +16,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.suleiman.pagination.api.MovieApi;
 import com.suleiman.pagination.api.MovieService;
@@ -22,6 +25,7 @@ import com.suleiman.pagination.models.TopRatedMovies;
 import com.suleiman.pagination.utils.PaginationAdapterCallback;
 import com.suleiman.pagination.utils.PaginationScrollListener;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -29,11 +33,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements PaginationAdapterCallback {
+public class MainActivity extends AppCompatActivity implements PaginationAdapterCallback, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "MainActivity";
 
-    PaginationAdapter adapter;
+    com.kotlinUtils.PaginationAdapter adapter;
     LinearLayoutManager linearLayoutManager;
     GridLayoutManager gridLayoutManager;
 
@@ -42,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
     LinearLayout errorLayout;
     Button btnRetry;
     TextView txtError;
-
+    SwipeRefreshLayout swipeRefreshLayout;
     private static final int PAGE_START = 1;
 
     private boolean isLoading = false;
@@ -64,8 +68,10 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         errorLayout = (LinearLayout) findViewById(R.id.error_layout);
         btnRetry = (Button) findViewById(R.id.error_btn_retry);
         txtError = (TextView) findViewById(R.id.error_txt_cause);
-
-        adapter = new PaginationAdapter(this);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
+        swipeRefreshLayout.setColorSchemeColors(Color.BLACK, Color.BLUE, Color.YELLOW, Color.GREEN);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        adapter = new com.kotlinUtils.PaginationAdapter(this);
 
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
@@ -207,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
             @Override
             public void onResponse(Call<TopRatedMovies> call, Response<TopRatedMovies> response) {
                 if (type.equals("first")) {
+                    hideSwipeRefresh();
                     Log.d(TAG, "loadFirstPage: " + currentPage);
                     hideErrorView();
                     List<Result> results = fetchResults(response);
@@ -227,7 +234,11 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
             @Override
             public void onFailure(Call<TopRatedMovies> call, Throwable t) {
                 t.printStackTrace();
-                adapter.showRetry(true, fetchErrorMessage(t));
+                if (type.equals("first")) {
+                    showErrorView(t);
+                } else {
+                    adapter.showRetry(true, fetchErrorMessage(t));
+                }
             }
         });
     }
@@ -255,12 +266,29 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
     @Override
     public void onItemsClickListener(Result result, int position) {
-
+        Toast.makeText(this, "click position " + position, Toast.LENGTH_SHORT).show();
+        Result result1 = new Result();
+        result1.setId(19);
+        result1.setAdult(true);
+        result1.setOriginalLanguage("MM");
+        result1.setOriginalTitle("");
+        result1.setReleaseDate("1993");
+        result1.setBackdropPath("https://pbs.twimg.com/profile_images/737889751034920960/ATs6TR-T_400x400.jpg");
+        result1.setPosterPath("https://pbs.twimg.com/profile_images/737889751034920960/ATs6TR-T_400x400.jpg");
+        result1.setTitle("Hein Htet");
+        result1.setGenreIds(new ArrayList<Integer>());
+        adapter.updateItemsAtPosition(position, result1);
     }
 
     @Override
     public void emptyLayout() {
 
+    }
+
+    private void hideSwipeRefresh() {
+        if (swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
     }
 
 
@@ -271,9 +299,9 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
     private void showErrorView(Throwable throwable) {
 
         if (errorLayout.getVisibility() == View.GONE) {
+            hideSwipeRefresh();
             errorLayout.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
-
             txtError.setText(fetchErrorMessage(throwable));
         }
     }
@@ -312,5 +340,12 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
     private boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null;
+    }
+
+    @Override
+    public void onRefresh() {
+        currentPage = PAGE_START;
+        adapter.clear();
+        loadApi("first");
     }
 }

@@ -176,7 +176,6 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
             ""
         }
     }
-
     /**
      * Using Glide to handle image loading.
      * Learn more about Glide here:
@@ -185,15 +184,27 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
      * @param posterPath from [Result.getPosterPath]
      * @return Glide builder
      */
+    var imageUrl: String? = null
+
     private fun loadImage(posterPath: String?): DrawableRequestBuilder<String> {
+
+        if (posterPath != null) {
+            if (posterPath.contains("profile_image")) {
+                imageUrl = posterPath
+            } else {
+                imageUrl = BASE_URL_IMG + posterPath
+            }
+        } else {
+            imageUrl = BASE_URL_IMG + posterPath
+        }
+
         return Glide
                 .with(context)
-                .load(BASE_URL_IMG + posterPath)
+                .load(imageUrl)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)   // cache both original & resized image
                 .centerCrop()
                 .crossFade()
     }
-
 
     /*
         Helpers - Pagination
@@ -230,6 +241,14 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
         movieResults!!.removeAt(position)
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, movieResults!!.size)
+    }
+
+    fun updateItemsAtPosition(position: Int, result: Result) {
+        movieResults!!.removeAt(position)
+        notifyItemChanged(position)
+        movieResults!!.add(position, result)
+        notifyItemChanged(position, movieResults!!.size)
+
     }
 
 
@@ -287,9 +306,12 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
             mMovieDesc = itemView.findViewById(R.id.movie_desc) as TextView
             mYear = itemView.findViewById(R.id.movie_year) as TextView
             mPosterImg = itemView.findViewById(R.id.movie_poster) as ImageView
-
             itemView.setOnClickListener { mCallback.onItemsClickListener(movieResults!![adapterPosition], adapterPosition) }
         }
+    }
+
+    override fun getItemId(position: Int): Long {
+        return movieResults!![position].id.toLong()
     }
 
     /**
