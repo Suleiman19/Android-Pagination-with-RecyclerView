@@ -131,7 +131,6 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             case LOADING:
                 LoadingVH loadingVH = (LoadingVH) holder;
-
                 if (retryPageLoad) {
                     loadingVH.mErrorLayout.setVisibility(View.VISIBLE);
                     loadingVH.mProgressBar.setVisibility(View.GONE);

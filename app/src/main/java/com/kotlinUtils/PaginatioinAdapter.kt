@@ -50,7 +50,6 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder? {
         var viewHolder: RecyclerView.ViewHolder? = null
         val inflater = LayoutInflater.from(parent.context)
-
         when (viewType) {
             ITEM -> {
                 val viewItem = inflater.inflate(R.layout.item_list, parent, false)
@@ -186,7 +185,7 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
      * @param posterPath from [Result.getPosterPath]
      * @return Glide builder
      */
-    private fun loadImage(posterPath: String): DrawableRequestBuilder<String> {
+    private fun loadImage(posterPath: String?): DrawableRequestBuilder<String> {
         return Glide
                 .with(context)
                 .load(BASE_URL_IMG + posterPath)
@@ -335,7 +334,6 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
         override fun onClick(view: View) {
             when (view.id) {
                 R.id.loadmore_retry, R.id.loadmore_errorlayout -> {
-
                     showRetry(false, null)
                     mCallback.retryPageLoad()
                 }

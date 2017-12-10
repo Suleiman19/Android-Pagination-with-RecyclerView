@@ -1,10 +1,8 @@
 package com.suleiman.pagination;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,7 +14,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.suleiman.pagination.api.MovieApi;
 import com.suleiman.pagination.api.MovieService;
@@ -36,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
     private static final String TAG = "MainActivity";
 
-    com.kotlinUtils.PaginationAdapter adapter;
+    PaginationAdapter adapter;
     LinearLayoutManager linearLayoutManager;
     GridLayoutManager gridLayoutManager;
 
@@ -45,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
     LinearLayout errorLayout;
     Button btnRetry;
     TextView txtError;
-    SwipeRefreshLayout swipeRefreshLayout;
 
     private static final int PAGE_START = 1;
 
@@ -58,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
     private MovieService movieService;
 
 
-    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,22 +64,8 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         errorLayout = (LinearLayout) findViewById(R.id.error_layout);
         btnRetry = (Button) findViewById(R.id.error_btn_retry);
         txtError = (TextView) findViewById(R.id.error_txt_cause);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
-        swipeRefreshLayout.setColorScheme(android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
 
-
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                adapter.clear();
-                currentPage = PAGE_START;
-                loadApi("first");
-            }
-        });
-
-        adapter = new com.kotlinUtils.PaginationAdapter(this);
+        adapter = new PaginationAdapter(this);
 
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
@@ -95,11 +76,11 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
             public int getSpanSize(int position) {
                 switch (adapter.getItemViewType(position)) {
                     case PaginationAdapter.HERO:
-                        return 2; // spacing 2 row in 1 items
+                        return 2;
                     case PaginationAdapter.ITEM:
-                        return 1; // spacing 1 row in 1 items
+                        return 1;
                     case PaginationAdapter.LOADING:
-                        return 2;// spacing 2 row in 1 items
+                        return 2;
                     default:
                         return -1;
                 }
@@ -116,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
                 isLoading = true;
                 currentPage += 1;
                 loadApi("next");
+                Log.d("load more ", "call back");
             }
 
             @Override
@@ -161,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
                 // Got data. Send it to adapter
 
                 hideErrorView();
-                hideSwifeRefresh();
+
                 List<Result> results = fetchResults(response);
                 progressBar.setVisibility(View.GONE);
                 adapter.addAll(results);
@@ -176,10 +158,6 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
                 showErrorView(t);
             }
         });
-    }
-
-    private void hideSwifeRefresh() {
-        swipeRefreshLayout.setRefreshing(false);
     }
 
     /**
@@ -226,7 +204,6 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
                 if (type.equals("first")) {
                     Log.d(TAG, "loadFirstPage: " + currentPage);
                     hideErrorView();
-                    hideSwifeRefresh();
                     List<Result> results = fetchResults(response);
                     progressBar.setVisibility(View.GONE);
                     adapter.addAll(results);
@@ -273,13 +250,12 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
     @Override
     public void onItemsClickListener(Result result, int position) {
-        adapter.removeAtItemsPosition(position);
-        Toast.makeText(this, "You click " + position + " items " + result.getTitle(), Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
     public void emptyLayout() {
-        Toast.makeText(this, "empty items", Toast.LENGTH_SHORT).show();
+
     }
 
 
