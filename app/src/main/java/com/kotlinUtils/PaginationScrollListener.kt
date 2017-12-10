@@ -24,10 +24,11 @@ abstract class PaginationScrollListener(manager: LinearLayoutManager) : Recycler
 
         if (!isLoading() && !isLastPage()) {
             if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0) {
-                Log.i("scroll load more items","")
                 loadMoreItems()
             }
         }
+
+
     }
 
     protected abstract fun loadMoreItems()

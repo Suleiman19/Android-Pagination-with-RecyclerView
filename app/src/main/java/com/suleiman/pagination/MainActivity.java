@@ -1,15 +1,18 @@
 package com.suleiman.pagination;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,12 +24,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kotlinUtils.RecyclerItemTouchHelper;
 import com.suleiman.pagination.api.MovieApi;
 import com.suleiman.pagination.api.MovieService;
 import com.suleiman.pagination.models.Result;
 import com.suleiman.pagination.models.TopRatedMovies;
 import com.suleiman.pagination.utils.PaginationAdapterCallback;
 import com.suleiman.pagination.utils.PaginationScrollListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
     com.kotlinUtils.PaginationAdapter adapter;
     LinearLayoutManager linearLayoutManager;
     GridLayoutManager gridLayoutManager;
-
+    List<Result> movieList;
     RecyclerView rv;
     ProgressBar progressBar;
     LinearLayout errorLayout;
@@ -65,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        movieList = new ArrayList<>();
         rv = (RecyclerView) findViewById(R.id.main_recycler);
         progressBar = (ProgressBar) findViewById(R.id.main_progress);
         errorLayout = (LinearLayout) findViewById(R.id.error_layout);
@@ -103,10 +109,10 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         rv.addOnScrollListener(new com.kotlinUtils.PaginationScrollListener(gridLayoutManager) {
             @Override
             protected void loadMoreItems() {
+                Log.d("load more ", "call back");
                 isLoading = true;
                 currentPage += 1;
                 loadApi("next");
-                Log.d("load more ", "call back");
             }
 
             @Override
@@ -127,9 +133,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
         //init service and load data
         movieService = MovieApi.getClient().create(MovieService.class);
-
         loadApi("first");
-
         btnRetry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -157,8 +161,14 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
                 progressBar.setVisibility(View.GONE);
                 adapter.addAll(results);
 
-                if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
-                else isLastPage = true;
+                if (currentPage <= TOTAL_PAGES) {
+                    Log.d("load need", "more");
+                    isLoading = true;
+                    adapter.addLoadingFooter();
+                } else {
+                    isLastPage = true;
+                }
+
             }
 
             @Override
@@ -229,9 +239,10 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
                     List<Result> results = fetchResults(response);
                     adapter.addAll(results);
                 }
-
-                if (currentPage != TOTAL_PAGES) adapter.addLoadingFooter();
-                else isLastPage = true;
+                if (currentPage != TOTAL_PAGES) {
+                    Log.d("load need", "");
+                    adapter.addLoadingFooter();
+                } else isLastPage = true;
             }
 
             @Override
@@ -347,6 +358,8 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
     @Override
     public void onRefresh() {
+        isLoading = false;
+        isLastPage = false;
         currentPage = PAGE_START;
         adapter.clear();
         loadApi("first");
@@ -377,4 +390,5 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

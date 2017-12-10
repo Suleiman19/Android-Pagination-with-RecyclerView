@@ -16,6 +16,9 @@ import com.suleiman.pagination.R
 import com.suleiman.pagination.models.Result
 import com.suleiman.pagination.utils.PaginationAdapterCallback
 import java.util.ArrayList
+import android.content.ClipData.Item
+
+
 
 /**
  * Created by heinhtet on 12/9/2017.
@@ -212,12 +215,14 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
         notifyItemInserted(movieResults!!.size - 1)
     }
 
+    /*add items all*/
     fun addAll(moveResults: List<Result>) {
         for (result in moveResults) {
             add(result)
         }
     }
 
+    /* remove items*/
     fun remove(r: Result?) {
         val position = movieResults!!.indexOf(r)
         if (position > -1) {
@@ -226,6 +231,7 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
         }
     }
 
+    /* remove all items*/
     fun clear() {
         isLoadingAdded = false
         while (itemCount > 0) {
@@ -255,15 +261,21 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
         notifyItemRangeChanged(0, movieResults!!.size)
     }
 
+    fun restoreItem(item: Result, position: Int) {
+        movieResults!!.add(position, item)
+        // notify item added by position
+        notifyItemInserted(position)
+    }
 
+    /* add loading footer */
     fun addLoadingFooter() {
         isLoadingAdded = true
         add(Result())
     }
 
+    /* remove loading footer view*/
     fun removeLoadingFooter() {
         isLoadingAdded = false
-
         val position = movieResults!!.size - 1
         val result = getItem(position)
 
@@ -299,7 +311,7 @@ class PaginationAdapter(private val context: Context) : RecyclerView.Adapter<Rec
     /**
      * Header ViewHolder
      */
-    protected inner class HeroVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    public inner class HeroVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val mMovieTitle: TextView
         val mMovieDesc: TextView
         val mYear: TextView // displays "year | language"
