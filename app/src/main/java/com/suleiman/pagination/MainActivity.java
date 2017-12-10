@@ -198,6 +198,11 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
     /*adding type and call api method write once*/
     private void loadApi(final String type) {
+
+        if (type.equals("first")) {
+            hideErrorView();
+        }
+
         callTopRatedMoviesApi().enqueue(new Callback<TopRatedMovies>() {
             @Override
             public void onResponse(Call<TopRatedMovies> call, Response<TopRatedMovies> response) {
