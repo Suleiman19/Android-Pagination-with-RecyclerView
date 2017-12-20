@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,6 +9,7 @@
     android:layout_marginLeft="@dimen/activity_margin_half"
     android:layout_marginRight="@dimen/activity_margin_half"
     android:layout_marginStart="@dimen/activity_margin_half"
+    android:background="?attr/selectableItemBackground"
     app:cardBackgroundColor="@color/placeholder_grey"
     app:cardCornerRadius="3dp"
     app:cardPreventCornerOverlap="false">
@@ -18,13 +18,15 @@
         android:id="@+id/movie_poster"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:background="@color/colorAccent"/>
+        android:adjustViewBounds="true"
+        android:foreground="?attr/selectableItemBackground"
+        tools:background="@color/colorAccent" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.7"
-        android:background="@drawable/scrim"/>
+        android:background="@drawable/scrim" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -46,7 +48,7 @@
                 android:ellipsize="end"
                 android:maxLength="40"
                 android:maxLines="1"
-                tools:text="Doctor Who : The Day of the Doctor"/>
+                tools:text="Doctor Who : The Day of the Doctor" />
 
             <TextView
                 android:id="@+id/movie_year"
@@ -58,7 +60,7 @@
                 android:maxLines="1"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
-                tools:text="2009 | EN"/>
+                tools:text="2009 | EN" />
 
         </LinearLayout>
 
@@ -72,7 +74,7 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:textColor="@android:color/white"
-            tools:text="Nowadays, user engagement is considered one of the most important metrics for the success of your app"/>
+            tools:text="Nowadays, user engagement is considered one of the most important metrics for the success of your app" />
 
     </LinearLayout>
 

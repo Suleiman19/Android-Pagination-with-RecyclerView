@@ -1,10 +1,13 @@
 package com.suleiman.pagination.utils;
 
-/**
- * Created by Suleiman on 16/11/16.
- */
+
+import com.suleiman.pagination.models.Result;
 
 public interface PaginationAdapterCallback {
 
     void retryPageLoad();
+
+    void onItemsClickListener(Result result, int position);
+
+    void emptyLayout();
 }
