@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
             }
         });
     }
-
+    int flag =1;
 
     /**
      * Performs a Retrofit call to the top rated movies API.
@@ -192,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
     @Override
     public void retryPageLoad() {
         loadNextPage();
+        flag =100;
     }
 
 
