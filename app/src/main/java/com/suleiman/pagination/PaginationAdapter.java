@@ -36,7 +36,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int LOADING = 1;
     private static final int HERO = 2;
 
-    private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/w150";
+    private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/w500";
 
     private List<Result> movieResults;
     private Context context;
