@@ -57,11 +57,11 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        rv = (RecyclerView) findViewById(R.id.main_recycler);
-        progressBar = (ProgressBar) findViewById(R.id.main_progress);
-        errorLayout = (LinearLayout) findViewById(R.id.error_layout);
-        btnRetry = (Button) findViewById(R.id.error_btn_retry);
-        txtError = (TextView) findViewById(R.id.error_txt_cause);
+        rv = findViewById(R.id.main_recycler);
+        progressBar = findViewById(R.id.main_progress);
+        errorLayout = findViewById(R.id.error_layout);
+        btnRetry = findViewById(R.id.error_btn_retry);
+        txtError = findViewById(R.id.error_txt_cause);
 
         adapter = new PaginationAdapter(this);
 

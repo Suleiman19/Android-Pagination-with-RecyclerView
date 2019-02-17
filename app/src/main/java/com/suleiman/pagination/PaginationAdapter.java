@@ -1,6 +1,7 @@
 package com.suleiman.pagination;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -13,13 +14,13 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.DrawableRequestBuilder;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.suleiman.pagination.models.Result;
+import com.suleiman.pagination.utils.GlideApp;
+import com.suleiman.pagination.utils.GlideRequest;
 import com.suleiman.pagination.utils.PaginationAdapterCallback;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int LOADING = 1;
     private static final int HERO = 2;
 
-    private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/w150";
+    private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/w200";
 
     private List<Result> movieResults;
     private Context context;
@@ -48,7 +49,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private String errorMsg;
 
-    public PaginationAdapter(Context context) {
+    PaginationAdapter(Context context) {
         this.context = context;
         this.mCallback = (PaginationAdapterCallback) context;
         movieResults = new ArrayList<>();
@@ -63,7 +64,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder = null;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
@@ -85,7 +86,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Result result = movieResults.get(position); // Movie
 
         switch (getItemViewType(position)) {
@@ -110,22 +111,23 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
                 // load movie thumbnail
                 loadImage(result.getPosterPath())
-                        .listener(new RequestListener<String, GlideDrawable>() {
+                        .listener(new RequestListener<Drawable>() {
                             @Override
-                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                // TODO: 08/11/16 handle failure
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                // TODO: 2/16/19 Handle failure
                                 movieVH.mProgress.setVisibility(View.GONE);
                                 return false;
                             }
 
                             @Override
-                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                                 // image ready, hide progress now
                                 movieVH.mProgress.setVisibility(View.GONE);
                                 return false;   // return false if you want Glide to handle everything else.
                             }
                         })
                         .into(movieVH.mPosterImg);
+
                 break;
 
             case LOADING:
@@ -181,17 +183,25 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      * Using Glide to handle image loading.
      * Learn more about Glide here:
      * <a href="http://blog.grafixartist.com/image-gallery-app-android-studio-1-4-glide/" />
+     * <p>
+     * //     * @param posterPath from {@link Result#getPosterPath()}
      *
-     * @param posterPath from {@link Result#getPosterPath()}
      * @return Glide builder
      */
-    private DrawableRequestBuilder<String> loadImage(@NonNull String posterPath) {
-        return Glide
+//    private DrawableRequestBuilder<String> loadImage(@NonNull String posterPath) {
+//        return Glide
+//                .with(context)
+//                .load(BASE_URL_IMG + posterPath)
+//                .diskCacheStrategy(DiskCacheStrategy.ALL)   // cache both original & resized image
+//                .centerCrop()
+//                .crossFade();
+
+//    }
+    private GlideRequest<Drawable> loadImage(@NonNull String posterPath) {
+        return GlideApp
                 .with(context)
                 .load(BASE_URL_IMG + posterPath)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)   // cache both original & resized image
-                .centerCrop()
-                .crossFade();
+                .centerCrop();
     }
 
 
@@ -283,10 +293,10 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         public HeroVH(View itemView) {
             super(itemView);
 
-            mMovieTitle = (TextView) itemView.findViewById(R.id.movie_title);
-            mMovieDesc = (TextView) itemView.findViewById(R.id.movie_desc);
-            mYear = (TextView) itemView.findViewById(R.id.movie_year);
-            mPosterImg = (ImageView) itemView.findViewById(R.id.movie_poster);
+            mMovieTitle = itemView.findViewById(R.id.movie_title);
+            mMovieDesc = itemView.findViewById(R.id.movie_desc);
+            mYear = itemView.findViewById(R.id.movie_year);
+            mPosterImg = itemView.findViewById(R.id.movie_poster);
         }
     }
 
@@ -303,11 +313,11 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         public MovieVH(View itemView) {
             super(itemView);
 
-            mMovieTitle = (TextView) itemView.findViewById(R.id.movie_title);
-            mMovieDesc = (TextView) itemView.findViewById(R.id.movie_desc);
-            mYear = (TextView) itemView.findViewById(R.id.movie_year);
-            mPosterImg = (ImageView) itemView.findViewById(R.id.movie_poster);
-            mProgress = (ProgressBar) itemView.findViewById(R.id.movie_progress);
+            mMovieTitle = itemView.findViewById(R.id.movie_title);
+            mMovieDesc = itemView.findViewById(R.id.movie_desc);
+            mYear = itemView.findViewById(R.id.movie_year);
+            mPosterImg = itemView.findViewById(R.id.movie_poster);
+            mProgress = itemView.findViewById(R.id.movie_progress);
         }
     }
 
@@ -321,10 +331,10 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         public LoadingVH(View itemView) {
             super(itemView);
 
-            mProgressBar = (ProgressBar) itemView.findViewById(R.id.loadmore_progress);
-            mRetryBtn = (ImageButton) itemView.findViewById(R.id.loadmore_retry);
-            mErrorTxt = (TextView) itemView.findViewById(R.id.loadmore_errortxt);
-            mErrorLayout = (LinearLayout) itemView.findViewById(R.id.loadmore_errorlayout);
+            mProgressBar = itemView.findViewById(R.id.loadmore_progress);
+            mRetryBtn = itemView.findViewById(R.id.loadmore_retry);
+            mErrorTxt = itemView.findViewById(R.id.loadmore_errortxt);
+            mErrorLayout = itemView.findViewById(R.id.loadmore_errorlayout);
 
             mRetryBtn.setOnClickListener(this);
             mErrorLayout.setOnClickListener(this);
