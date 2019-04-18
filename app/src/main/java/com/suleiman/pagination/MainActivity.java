@@ -3,11 +3,15 @@ package com.suleiman.pagination;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -40,13 +44,14 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
     LinearLayout errorLayout;
     Button btnRetry;
     TextView txtError;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     private static final int PAGE_START = 1;
 
     private boolean isLoading = false;
     private boolean isLastPage = false;
     // limiting to 5 for this tutorial, since total pages in actual API is very large. Feel free to modify.
-    private int TOTAL_PAGES = 5;
+    private static final int TOTAL_PAGES = 5;
     private int currentPage = PAGE_START;
 
     private MovieService movieService;
@@ -62,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         errorLayout = findViewById(R.id.error_layout);
         btnRetry = findViewById(R.id.error_btn_retry);
         txtError = findViewById(R.id.error_txt_cause);
+        swipeRefreshLayout = findViewById(R.id.main_swiperefresh);
 
         adapter = new PaginationAdapter(this);
 
@@ -97,33 +103,64 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         });
 
         //init service and load data
-        movieService = MovieApi.getClient().create(MovieService.class);
+        movieService = MovieApi.getClient(this).create(MovieService.class);
 
         loadFirstPage();
 
-        btnRetry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFirstPage();
-            }
-        });
+        btnRetry.setOnClickListener(view -> loadFirstPage());
+
+        swipeRefreshLayout.setOnRefreshListener(this::doRefresh);
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_refresh:
+                // Signal SwipeRefreshLayout to start the progress indicator
+                swipeRefreshLayout.setRefreshing(true);
+                doRefresh();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Triggers the actual background refresh via the {@link SwipeRefreshLayout}
+     */
+    private void doRefresh() {
+        if (callTopRatedMoviesApi().isExecuted())
+            callTopRatedMoviesApi().cancel();
+
+        // TODO: Check if data is stale.
+        //  Execute network request if cache is expired; otherwise do not update data.
+        adapter.getMovies().clear();
+        adapter.notifyDataSetChanged();
+        loadFirstPage();
+        swipeRefreshLayout.setRefreshing(false);
+    }
 
     private void loadFirstPage() {
         Log.d(TAG, "loadFirstPage: ");
 
         // To ensure list is visible when retry button in error view is clicked
         hideErrorView();
+        currentPage = PAGE_START;
 
         callTopRatedMoviesApi().enqueue(new Callback<TopRatedMovies>() {
             @Override
             public void onResponse(Call<TopRatedMovies> call, Response<TopRatedMovies> response) {
-                // Got data. Send it to adapter
-
                 hideErrorView();
 
+//                Log.i(TAG, "onResponse: " + (response.raw().cacheResponse() != null ? "Cache" : "Network"));
+
+                // Got data. Send it to adapter
                 List<Result> results = fetchResults(response);
                 progressBar.setVisibility(View.GONE);
                 adapter.addAll(results);
@@ -155,6 +192,9 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         callTopRatedMoviesApi().enqueue(new Callback<TopRatedMovies>() {
             @Override
             public void onResponse(Call<TopRatedMovies> call, Response<TopRatedMovies> response) {
+//                Log.i(TAG, "onResponse: " + currentPage
+//                        + (response.raw().cacheResponse() != null ? "Cache" : "Network"));
+
                 adapter.removeLoadingFooter();
                 isLoading = false;
 
