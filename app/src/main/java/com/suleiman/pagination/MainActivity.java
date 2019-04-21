@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
      * Triggers the actual background refresh via the {@link SwipeRefreshLayout}
      */
     private void doRefresh() {
+        progressBar.setVisibility(View.VISIBLE);
         if (callTopRatedMoviesApi().isExecuted())
             callTopRatedMoviesApi().cancel();
 

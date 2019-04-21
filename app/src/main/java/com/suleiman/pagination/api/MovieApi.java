@@ -22,7 +22,7 @@ public class MovieApi {
 
     private static Retrofit retrofit = null;
 
-    private final static long CACHE_SIZE = 10 * 1024 * 1024; // 5MB Cache size
+    private final static long CACHE_SIZE = 10 * 1024 * 1024; // 10MB Cache size
 
     private static OkHttpClient buildClient(Context context) {
 
