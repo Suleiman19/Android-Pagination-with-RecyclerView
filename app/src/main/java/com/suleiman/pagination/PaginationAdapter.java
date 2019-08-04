@@ -2,9 +2,6 @@ package com.suleiman.pagination;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,17 +11,21 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.suleiman.pagination.models.Result;
 import com.suleiman.pagination.utils.GlideApp;
-import com.suleiman.pagination.utils.GlideRequest;
 import com.suleiman.pagination.utils.PaginationAdapterCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by Suleiman on 19/10/16.
@@ -188,16 +189,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      *
      * @return Glide builder
      */
-//    private DrawableRequestBuilder<String> loadImage(@NonNull String posterPath) {
-//        return Glide
-//                .with(context)
-//                .load(BASE_URL_IMG + posterPath)
-//                .diskCacheStrategy(DiskCacheStrategy.ALL)   // cache both original & resized image
-//                .centerCrop()
-//                .crossFade();
-
-//    }
-    private GlideRequest<Drawable> loadImage(@NonNull String posterPath) {
+    private RequestBuilder<Drawable> loadImage(@NonNull String posterPath) {
         return GlideApp
                 .with(context)
                 .load(BASE_URL_IMG + posterPath)

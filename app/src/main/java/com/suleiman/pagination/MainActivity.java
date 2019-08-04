@@ -2,12 +2,8 @@ package com.suleiman.pagination;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +24,11 @@ import com.suleiman.pagination.utils.PaginationScrollListener;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
         adapter = new PaginationAdapter(this);
 
-        linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rv.setLayoutManager(linearLayoutManager);
         rv.setItemAnimator(new DefaultItemAnimator());
 
@@ -110,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         btnRetry.setOnClickListener(view -> loadFirstPage());
 
         swipeRefreshLayout.setOnRefreshListener(this::doRefresh);
-
     }
 
     @Override
@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
 
     /**
-     * @param throwable required for {@link #fetchErrorMessage(Throwable)}
+     * @param throwable required
      * @return
      */
     private void showErrorView(Throwable throwable) {
@@ -279,10 +279,14 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
     /**
      * Remember to add android.permission.ACCESS_NETWORK_STATE permission.
      *
-     * @return
+     * @return connection status
      */
     private boolean isNetworkConnected() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo() != null;
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
     }
 }
